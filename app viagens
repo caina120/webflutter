@@ -1,0 +1,179 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MeuAplicativo());
+}
+
+class MeuAplicativo extends StatelessWidget {
+  const MeuAplicativo({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Viagens',
+      home: const TelaViagens(),
+    );
+  }
+}
+
+class TelaViagens extends StatelessWidget {
+  const TelaViagens({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Viagens'),
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Imagem do Coliseu
+            Stack(
+              children: [
+                Image.network(
+                  'https://images.unsplash.com/photo-1552832230-c0197dd311b5',
+                  width: double.infinity,
+                  height: 190,
+                  fit: BoxFit.cover,
+                ),
+                const Positioned(
+                  left: 10,
+                  bottom: 10,
+                  child: Text(
+                    'Roma\nColiseu',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            // Barra de ações
+            Container(
+              color: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      children: const [
+                        Icon(Icons.location_on_outlined, color: Colors.blue),
+                        Text('Quero ir', style: TextStyle(fontSize: 11)),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      children: const [
+                        Icon(Icons.verified_outlined, color: Colors.blue),
+                        Text('Já fui', style: TextStyle(fontSize: 11)),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      children: const [
+                        Icon(Icons.share, color: Colors.blue),
+                        Text('Compartilhar', style: TextStyle(fontSize: 11)),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      children: const [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.star, color: Colors.blue, size: 16),
+                            Icon(Icons.star, color: Colors.blue, size: 16),
+                            Icon(Icons.star, color: Colors.blue, size: 16),
+                          ],
+                        ),
+                        Text('Avaliações', style: TextStyle(fontSize: 11)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: const Text(
+                'Lorem ipsum dolor sit amet, consectetur adipiscing elit. '
+                'Fusce id diam ligula ultrices pulvinar. In neque lectus, '
+                'aliquet eu libero et, venenatis lacinia nulla. Etiam eget '
+                'purus leo. Nam consectetur ornare est eu lobortis. '
+                'Morbi eu augue eu lectus condimentum vestibulum. '
+                'Etiam id nibh eu justo porttitor eu, porta nisl. '
+                'Pellentesque vulputate nibh sit amet rutrum viverra. '
+                'Nullam eget metus est. Integer condimentum odio, '
+                'posuere congue malesuada.',
+                textAlign: TextAlign.justify,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.black87,
+                ),
+              ),
+            ),
+
+            
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Pessoas Encontradas',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Column(
+                    children: const [
+                      Icon(Icons.filter_alt, color: Colors.blue),
+                      Text(
+                        'Filtrar',
+                        style: TextStyle(fontSize: 10),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: List.generate(
+                  4,
+                  (index) => const CircleAvatar(
+                    radius: 19,
+                    backgroundColor: Color(0xFFE0E0E0),
+                    child: Icon(
+                      Icons.person,
+                      color: Colors.white,
+                      size: 30,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
