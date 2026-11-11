@@ -1,0 +1,473 @@
+import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
+
+void main() {
+  runApp(const MeuAplicativo());
+}
+
+class MeuAplicativo extends StatelessWidget {
+  const MeuAplicativo({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Viagens',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const TelaViagens(),
+    );
+  }
+}
+
+class TelaViagens extends StatefulWidget {
+  const TelaViagens({super.key});
+
+  @override
+  State<TelaViagens> createState() => _TelaViagensState();
+}
+
+class _TelaViagensState extends State<TelaViagens> {
+  bool queroIr = false;
+  bool jaFui = false;
+  double avaliacao = 0;
+
+  String filtro = 'Todos';
+
+  final List<Map<String, dynamic>> pessoas = [
+    {
+      'nome': 'Ana Silva',
+      'idade': 25,
+      'local': 'São Paulo, Brasil',
+      'descricao': 'Apaixonada por viagens e fotografia.',
+      'interesse': 'Quero ir',
+      'cor': Colors.pink,
+    },
+    {
+      'nome': 'Carlos Souza',
+      'idade': 29,
+      'local': 'Rio de Janeiro, Brasil',
+      'descricao': 'Conhecer novos lugares é minha paixão.',
+      'interesse': 'Já fui',
+      'cor': Colors.orange,
+    },
+    {
+      'nome': 'Mariana Costa',
+      'idade': 23,
+      'local': 'Curitiba, Brasil',
+      'descricao': 'Adoro história, cultura e gastronomia.',
+      'interesse': 'Quero ir',
+      'cor': Colors.purple,
+    },
+    {
+      'nome': 'Pedro Santos',
+      'idade': 31,
+      'local': 'Belo Horizonte, Brasil',
+      'descricao': 'Viajante e explorador do mundo.',
+      'interesse': 'Já fui',
+      'cor': Colors.teal,
+    },
+  ];
+
+  
+
+  void abrirAvaliacoes() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        double notaTemporaria = avaliacao;
+
+        return StatefulBuilder(
+          builder: (context, atualizarDialog) {
+            return AlertDialog(
+              title: const Text('Avalie este destino'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('Qual nota você daria para o Coliseu?'),
+                  const SizedBox(height: 15),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(5, (index) {
+                      return IconButton(
+                        onPressed: () {
+                          atualizarDialog(() {
+                            notaTemporaria = index + 1.0;
+                          });
+                        },
+                        icon: Icon(
+                          index < notaTemporaria
+                              ? Icons.star
+                              : Icons.star_border,
+                          color: Colors.amber,
+                          size: 30,
+                        ),
+                      );
+                    }),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancelar'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      avaliacao = notaTemporaria;
+                    });
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Enviar avaliação'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void abrirFiltro() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Filtrar pessoas',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 15),
+              ListTile(
+                leading: const Icon(Icons.people),
+                title: const Text('Todos'),
+                onTap: () {
+                  setState(() => filtro = 'Todos');
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.location_on),
+                title: const Text('Quero ir'),
+                onTap: () {
+                  setState(() => filtro = 'Quero ir');
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.verified),
+                title: const Text('Já fui'),
+                onTap: () {
+                  setState(() => filtro = 'Já fui');
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final pessoasFiltradas = pessoas.where((pessoa) {
+      return filtro == 'Todos' || pessoa['interesse'] == filtro;
+    }).toList();
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Viagens'),
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // IMAGEM DO COLISEU
+
+            Stack(
+              children: [
+                Image.network(
+                  'https://images.unsplash.com/photo-1552832230-c0197dd311b5',
+                  width: double.infinity,
+                  height: 190,
+                  fit: BoxFit.cover,
+                ),
+                const Positioned(
+                  left: 10,
+                  bottom: 10,
+                  child: Text(
+                    'Roma\nColiseu',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            // BARRA DE AÇÕES
+
+            Container(
+              color: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          queroIr = !queroIr;
+                          if (queroIr) jaFui = false;
+                        });
+                      },
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.location_on_outlined,
+                            color: queroIr ? Colors.green : Colors.blue,
+                          ),
+                          Text(
+                            queroIr ? 'Quero ir ✓' : 'Quero ir',
+                            style: const TextStyle(fontSize: 11),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          jaFui = !jaFui;
+                          if (jaFui) queroIr = false;
+                        });
+                      },
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.verified_outlined,
+                            color: jaFui ? Colors.green : Colors.blue,
+                          ),
+                          Text(
+                            jaFui ? 'Já fui ✓' : 'Já fui',
+                            style: const TextStyle(fontSize: 11),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: InkWell(
+                      onTap: compartilhar,
+                      child: const Column(
+                        children: [
+                          Icon(Icons.share, color: Colors.blue),
+                          Text(
+                            'Compartilhar',
+                            style: TextStyle(fontSize: 11),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: InkWell(
+                      onTap: abrirAvaliacoes,
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(5, (index) {
+                              return Icon(
+                                index < avaliacao
+                                    ? Icons.star
+                                    : Icons.star_border,
+                                color: Colors.blue,
+                                size: 16,
+                              );
+                            }),
+                          ),
+                          const Text(
+                            'Avaliações',
+                            style: TextStyle(fontSize: 11),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // DESCRIÇÃO
+
+            const Padding(
+              padding: EdgeInsets.all(10),
+              child: Text(
+                'O Coliseu de Roma é um dos monumentos históricos '
+                'mais famosos do mundo. Construído na Roma Antiga, '
+                'era utilizado para grandes espetáculos e combates '
+                'de gladiadores. Atualmente, é um dos principais '
+                'pontos turísticos da Itália, recebendo milhares '
+                'de visitantes todos os anos. Um lugar incrível '
+                'para conhecer história, arquitetura e cultura.',
+                textAlign: TextAlign.justify,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.black87,
+                ),
+              ),
+            ),
+
+            // PESSOAS ENCONTRADAS
+
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10,
+                vertical: 5,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Pessoas Encontradas',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  InkWell(
+                    onTap: abrirFiltro,
+                    child: Column(
+                      children: [
+                        const Icon(
+                          Icons.filter_alt,
+                          color: Colors.blue,
+                        ),
+                        Text(
+                          filtro,
+                          style: const TextStyle(fontSize: 10),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // LISTA DE USUÁRIOS
+
+            ...pessoasFiltradas.map((pessoa) {
+              return Card(
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                child: ListTile(
+                  leading: CircleAvatar(
+                    radius: 27,
+                    backgroundColor: pessoa['cor'],
+                    child: Text(
+                      pessoa['nome'][0],
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                      ),
+                    ),
+                  ),
+                  title: Text(
+                    '${pessoa['nome']}, ${pessoa['idade']} anos',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 4),
+                      Text(pessoa['local']),
+                      Text(pessoa['descricao']),
+                      const SizedBox(height: 5),
+                      Row(
+                        children: [
+                          Icon(
+                            pessoa['interesse'] == 'Quero ir'
+                                ? Icons.location_on
+                                : Icons.verified,
+                            color: Colors.blue,
+                            size: 15,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            pessoa['interesse'],
+                            style: const TextStyle(
+                              color: Colors.blue,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  trailing: IconButton(
+                    icon: const Icon(
+                      Icons.person_add_alt_1,
+                      color: Colors.blue,
+                    ),
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Você demonstrou interesse em ${pessoa['nome']}!',
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text(pessoa['nome']),
+                          content: Text(
+                            'Idade: ${pessoa['idade']} anos\n\n'
+                            'Localização: ${pessoa['local']}\n\n'
+                            'Sobre: ${pessoa['descricao']}\n\n'
+                            'Interesse: ${pessoa['interesse']}',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('Fechar'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
+              );
+            }).toList(),
+
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+}
