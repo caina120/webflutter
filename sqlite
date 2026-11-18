@@ -1,0 +1,94 @@
+import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final path = join(await getDatabasesPath(), 'login.db');
+
+  final db = await openDatabase(
+    path,
+    version: 1,
+    onCreate: (db, version) async {
+      await db.execute('''
+        CREATE TABLE usuarios (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          email TEXT,
+          senha TEXT
+        )
+      ''');
+
+      // Usuário de teste
+      await db.insert('usuarios', {
+        'email': 'teste@gmail.com',
+        'senha': '123456',
+      });
+    },
+  );
+
+  runApp(
+    MaterialApp(debugShowCheckedModeBanner: false, home: LoginScreen(db: db)),
+  );
+}
+
+class LoginScreen extends StatelessWidget {
+  final Database db;
+
+  LoginScreen({super.key, required this.db});
+
+  final email = TextEditingController();
+  final senha = TextEditingController();
+
+  Future<void> login(BuildContext context) async {
+    final resultado = await db.query(
+      'usuarios',
+      where: 'email = ? AND senha = ?',
+      whereArgs: [email.text, senha.text],
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          resultado.isNotEmpty
+              ? 'Login realizado!'
+              : 'Email ou senha incorretos!',
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Login')),
+
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              controller: email,
+              decoration: const InputDecoration(labelText: 'Email'),
+            ),
+
+            TextField(
+              controller: senha,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: 'Senha'),
+            ),
+
+            const SizedBox(height: 20),
+
+            ElevatedButton(
+              onPressed: () => login(context),
+              child: const Text('Entrar'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
